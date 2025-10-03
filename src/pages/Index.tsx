@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Calendar, Maximize, Minimize, Volume2, VolumeX } from "lucide-react";
 import { Fireworks } from "@/components/Fireworks";
+import { BannerAd, MobileBannerAd, DesktopBannerAd } from '../components/GoogleAds';
+import { ADSENSE_CONFIG, shouldShowAds } from '../config/adsense';
 
 const Index = () => {
   const [time, setTime] = useState(0);
@@ -329,6 +331,16 @@ const Index = () => {
           </p>
         </div>
 
+        {/* Top Banner Ad - Hidden in fullscreen */}
+        {shouldShowAds(isFullscreen) && (
+          <div className="flex justify-center mb-6">
+            <BannerAd 
+              adSlot={ADSENSE_CONFIG.adSlots.topBanner}
+              className="max-w-full"
+            />
+          </div>
+        )}
+
         {/* Main Display */}
         <div className="bg-card rounded-2xl p-6 sm:p-8 md:p-12 mb-8 border-2 border-amber-400 shadow-2xl">
           {isNewYear ? (
@@ -348,19 +360,35 @@ const Index = () => {
           )}
         </div>
 
-        {/* Ad Placeholder - Hidden in fullscreen */}
-        {!isFullscreen && (
-          <div className="flex justify-center mt-10 p-6 bg-muted/30 rounded-xl border-4 border-dashed border-border">
-            <p className="text-base text-muted-foreground font-mono text-center">
-              [ Google AdSense/AdMob Ad Banner Placeholder - 320x100 or Adaptive ]
-            </p>
+        {/* Google Ads - Hidden in fullscreen */}
+        {shouldShowAds(isFullscreen) && (
+          <div className="flex flex-col items-center gap-4 mt-10">
+            {/* Mobile Banner Ad */}
+            <MobileBannerAd 
+              adSlot={ADSENSE_CONFIG.adSlots.mobileBanner} 
+              className="flex justify-center"
+            />
+            
+            {/* Desktop Banner Ad */}
+            <DesktopBannerAd 
+              adSlot={ADSENSE_CONFIG.adSlots.desktopBanner} 
+              className="flex justify-center"
+            />
+            
+            {/* Responsive Banner Alternative */}
+            <div className="w-full max-w-4xl mx-auto">
+              <BannerAd 
+                adSlot={ADSENSE_CONFIG.adSlots.responsiveBanner}
+                className="flex justify-center"
+              />
+            </div>
           </div>
         )}
 
         {/* Copyright Footer - Hidden in fullscreen */}
         {!isFullscreen && (
           <footer className="text-center mt-8 py-4 border-t border-border">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground mb-2">
               © 2025 New Year Countdown Timer. Made with ❤️ by{" "}
               <a 
                 href="https://www.linkedin.com/in/anino-zaridze/" 
@@ -371,6 +399,21 @@ const Index = () => {
                 Anino Zaridze
               </a>
             </p>
+            <div className="flex justify-center gap-4 text-xs text-muted-foreground">
+              <a 
+                href="/privacy" 
+                className="text-amber-400 hover:text-amber-300 transition-colors underline"
+              >
+                Privacy Policy
+              </a>
+              <span>•</span>
+              <a 
+                href="mailto:your-email@example.com" 
+                className="text-amber-400 hover:text-amber-300 transition-colors underline"
+              >
+                Contact
+              </a>
+            </div>
           </footer>
         )}
       </article>
