@@ -16,7 +16,7 @@ export const GoogleAd: React.FC<GoogleAdProps> = ({
 }) => {
   useEffect(() => {
     try {
-      // @ts-ignore
+      // @ts-expect-error - AdSense global not typed
       (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch (err) {
       console.log('AdSense error:', err);
