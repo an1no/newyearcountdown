@@ -1,0 +1,24 @@
+{
+  "name": "New Year Countdown",
+  "short_name": "NY Countdown",
+  "description": "Interactive countdown timer to New Year with fireworks, music, and celebration effects",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#7C3AED",
+  "orientation": "any",
+  "categories": ["entertainment", "utilities"],
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
