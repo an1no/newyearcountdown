@@ -15,9 +15,14 @@ const Index = () => {
 
   // New Year countdown calculation
   useEffect(() => {
-    // FOR TESTING: Set target time to 12 seconds from when component first loads
-    const targetTime = new Date(Date.now() + 12 * 1000); // Fixed target time
-    const celebrationEnd = new Date(targetTime.getTime() + 5 * 1000); // Celebrate for 5 seconds
+    // Calculate next New Year (January 1st at midnight)
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const nextYear = currentYear + 1;
+    
+    // Target time is January 1st of next year at midnight
+    const targetTime = new Date(nextYear, 0, 1, 0, 0, 0, 0); // Month is 0-indexed, so 0 = January
+    const celebrationEnd = new Date(targetTime.getTime() + 10 * 1000); // Celebrate for 10 seconds
     
     const calculateTimeRemaining = () => {
       const now = new Date();
@@ -29,14 +34,14 @@ const Index = () => {
         return;
       }
       
-      // Reset celebration mode after celebration period and start new countdown
+      // Reset celebration mode after celebration period and start new countdown to next year
       if (isNewYear && now >= celebrationEnd) {
         setIsNewYear(false);
-        // This will trigger the useEffect to run again and create a new target time
+        // This will trigger the useEffect to run again and create a new target time for next year
         return;
       }
       
-      // Calculate time remaining to fixed target
+      // Calculate time remaining to New Year
       const diff = targetTime.getTime() - now.getTime();
       const remainingTime = Math.max(0, Math.floor(diff / 1000));
       setTime(remainingTime);
