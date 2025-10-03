@@ -14,7 +14,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter basename="/newyearcountdown">
+      <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/privacy" element={<Privacy />} />

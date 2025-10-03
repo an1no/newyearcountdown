@@ -5,8 +5,8 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  // Set base path for GitHub Pages deployment
-  base: process.env.NODE_ENV === 'production' ? '/newyearcountdown/' : '/',
+  // Set base path - use root for custom domain
+  base: '/',
   server: {
     host: "::",
     port: 8080,

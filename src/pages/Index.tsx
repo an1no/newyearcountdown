@@ -449,7 +449,7 @@ const Index = () => {
         ref={audioRef}
         preload="auto"
       >
-        <source src="/newyearcountdown/song.mp3" type="audio/mpeg" />
+        <source src="/song.mp3" type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
       
@@ -457,7 +457,7 @@ const Index = () => {
         ref={fireworksAudioRef}
         preload="auto"
       >
-        <source src="/newyearcountdown/firework.mp3" type="audio/mpeg" />
+        <source src="/firework.mp3" type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
     </main>
