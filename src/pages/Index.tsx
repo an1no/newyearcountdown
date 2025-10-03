@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { Calendar } from "lucide-react";
+import { Calendar, Maximize, Minimize } from "lucide-react";
 import { Fireworks } from "@/components/Fireworks";
 
 const Index = () => {
   const [time, setTime] = useState(0);
   const [isNewYear, setIsNewYear] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   // New Year countdown calculation
   useEffect(() => {
@@ -37,6 +38,33 @@ const Index = () => {
   };
 
   const timeData = formatTime(time);
+
+  // Fullscreen functionality
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().then(() => {
+        setIsFullscreen(true);
+      }).catch(err => {
+        console.log('Error attempting to enable fullscreen:', err);
+      });
+    } else {
+      document.exitFullscreen().then(() => {
+        setIsFullscreen(false);
+      }).catch(err => {
+        console.log('Error attempting to exit fullscreen:', err);
+      });
+    }
+  };
+
+  // Listen for fullscreen changes (e.g., user pressing ESC)
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
 
   const DigitalDisplay = () => {
     const { days, hours, minutes, seconds } = timeData;
@@ -75,9 +103,24 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-4 sm:p-6 md:p-8 relative">
+    <div className="min-h-screen bg-background p-4 sm:p-6 md:p-8 relative flex items-center justify-center">
       <Fireworks />
-      <div className="max-w-6xl mx-auto relative z-10">
+      <div className="max-w-6xl w-full relative z-10">
+        {/* Fullscreen Button */}
+        <div className="absolute top-0 right-0 z-20">
+          <button
+            onClick={toggleFullscreen}
+            className="p-3 bg-card hover:bg-muted rounded-lg border border-border shadow-lg transition-all duration-200 hover:scale-105"
+            title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+          >
+            {isFullscreen ? (
+              <Minimize className="w-5 h-5 text-muted-foreground" />
+            ) : (
+              <Maximize className="w-5 h-5 text-muted-foreground" />
+            )}
+          </button>
+        </div>
+
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-2 text-gradient bg-gradient-to-r from-purple-400 via-blue-400 to-amber-400 bg-clip-text text-transparent">
@@ -108,12 +151,14 @@ const Index = () => {
           )}
         </div>
 
-        {/* Ad Placeholder */}
-        <div className="flex justify-center mt-10 p-6 bg-muted/30 rounded-xl border-4 border-dashed border-border">
-          <p className="text-base text-muted-foreground font-mono text-center">
-            [ Google AdSense/AdMob Ad Banner Placeholder - 320x100 or Adaptive ]
-          </p>
-        </div>
+        {/* Ad Placeholder - Hidden in fullscreen */}
+        {!isFullscreen && (
+          <div className="flex justify-center mt-10 p-6 bg-muted/30 rounded-xl border-4 border-dashed border-border">
+            <p className="text-base text-muted-foreground font-mono text-center">
+              [ Google AdSense/AdMob Ad Banner Placeholder - 320x100 or Adaptive ]
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
