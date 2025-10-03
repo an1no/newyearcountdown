@@ -11,6 +11,7 @@ const Index = () => {
   const [showFullscreenBtn, setShowFullscreenBtn] = useState(true);
   const [isMusicPlaying, setIsMusicPlaying] = useState(true); // Start with music playing
   const [timeOffset, setTimeOffset] = useState(0); // Offset between server time and local time
+  const [userTimezone, setUserTimezone] = useState(''); // User's timezone
   const audioRef = useRef<HTMLAudioElement>(null);
   const fireworksAudioRef = useRef<HTMLAudioElement>(null);
 
@@ -18,15 +19,17 @@ const Index = () => {
   useEffect(() => {
     const fetchServerTime = async () => {
       try {
-        // Using WorldTimeAPI for accurate time
-        const response = await fetch('https://worldtimeapi.org/api/timezone/Etc/UTC');
+        // Using WorldTimeAPI to get accurate time in user's timezone
+        const response = await fetch('https://worldtimeapi.org/api/ip');
         const data = await response.json();
         const serverTime = new Date(data.datetime).getTime();
         const localTime = Date.now();
         setTimeOffset(serverTime - localTime);
+        setUserTimezone(data.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone);
       } catch (error) {
         console.log('Could not fetch server time, using local time:', error);
         setTimeOffset(0); // Fallback to local time if API fails
+        setUserTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone);
       }
     };
     
@@ -40,13 +43,13 @@ const Index = () => {
 
   // New Year countdown calculation
   useEffect(() => {
-    // Calculate next New Year (January 1st at midnight UTC)
+    // Calculate next New Year (January 1st at midnight in user's local timezone)
     const now = getAccurateTime();
-    const currentYear = now.getUTCFullYear();
+    const currentYear = now.getFullYear();
     const nextYear = currentYear + 1;
     
-    // Target time is January 1st of next year at midnight UTC
-    const targetTime = new Date(Date.UTC(nextYear, 0, 1, 0, 0, 0, 0)); // Month is 0-indexed, so 0 = January
+    // Target time is January 1st of next year at midnight in user's local timezone
+    const targetTime = new Date(nextYear, 0, 1, 0, 0, 0, 0); // Month is 0-indexed, so 0 = January
     const celebrationEnd = new Date(targetTime.getTime() + 10 * 1000); // Celebrate for 10 seconds
     
     const calculateTimeRemaining = () => {
@@ -80,7 +83,7 @@ const Index = () => {
     calculateTimeRemaining();
     const interval = setInterval(calculateTimeRemaining, 1000);
     return () => clearInterval(interval);
-  }, [isNewYear, timeOffset]); // Re-run when isNewYear changes or when we get accurate time offset
+  }, [isNewYear, timeOffset, userTimezone]); // Re-run when isNewYear changes, time offset is set, or timezone is detected
 
   // Play fireworks sound when celebration starts
   useEffect(() => {
@@ -357,7 +360,11 @@ const Index = () => {
           </h1>
           <p className="text-muted-foreground text-sm sm:text-base flex items-center justify-center gap-2">
             <Calendar className="w-4 h-4" />
-            {isNewYear ? `🎉 HAPPY NEW YEAR ${new Date().getFullYear()}! 🎉` : `New Year ${new Date().getFullYear() + 1} • Countdown to Tomorrow's Beginning`}
+            {isNewYear ? (
+              `🎉 HAPPY NEW YEAR ${getAccurateTime().getFullYear()}! 🎉`
+            ) : (
+              `New Year ${getAccurateTime().getFullYear() + 1} • ${userTimezone ? userTimezone.replace('_', ' ') : 'Your Local Time'}`
+            )}
           </p>
         </div>
 
