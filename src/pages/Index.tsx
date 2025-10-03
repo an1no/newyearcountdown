@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Calendar, Maximize, Minimize } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Calendar, Maximize, Minimize, Volume2, VolumeX } from "lucide-react";
 import { Fireworks } from "@/components/Fireworks";
 
 const Index = () => {
@@ -7,6 +7,9 @@ const Index = () => {
   const [isNewYear, setIsNewYear] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showFullscreenBtn, setShowFullscreenBtn] = useState(true);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(true); // Start with music playing
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const fireworksAudioRef = useRef<HTMLAudioElement>(null);
 
   // New Year countdown calculation
   useEffect(() => {
@@ -46,6 +49,16 @@ const Index = () => {
     const interval = setInterval(calculateTimeRemaining, 1000);
     return () => clearInterval(interval);
   }, [isNewYear]); // This will re-run when isNewYear changes, creating a new countdown
+
+  // Play fireworks sound when celebration starts
+  useEffect(() => {
+    if (isNewYear && fireworksAudioRef.current) {
+      fireworksAudioRef.current.currentTime = 0; // Reset to beginning
+      fireworksAudioRef.current.play().catch(error => {
+        console.log('Fireworks audio play failed:', error);
+      });
+    }
+  }, [isNewYear]);
 
   const formatTime = (seconds: number) => {
     const days = Math.floor(seconds / 86400);
@@ -125,6 +138,65 @@ const Index = () => {
     };
   }, [isFullscreen]);
 
+  // Music functionality
+  const toggleMusic = () => {
+    if (audioRef.current) {
+      if (isMusicPlaying) {
+        audioRef.current.pause();
+        setIsMusicPlaying(false);
+      } else {
+        audioRef.current.play().catch(error => {
+          console.log('Audio play failed:', error);
+        });
+        setIsMusicPlaying(true);
+      }
+    }
+  };
+
+  // Setup audio elements
+  useEffect(() => {
+    // Background music setup
+    if (audioRef.current) {
+      audioRef.current.loop = true;
+      audioRef.current.volume = 0.3; // Set volume to 30%
+      
+      const handleEnded = () => setIsMusicPlaying(false);
+      const handlePlay = () => setIsMusicPlaying(true);
+      const handlePause = () => setIsMusicPlaying(false);
+
+      audioRef.current.addEventListener('ended', handleEnded);
+      audioRef.current.addEventListener('play', handlePlay);
+      audioRef.current.addEventListener('pause', handlePause);
+
+      // Auto-play music when component loads
+      const playMusic = async () => {
+        try {
+          await audioRef.current?.play();
+          setIsMusicPlaying(true);
+        } catch (error) {
+          console.log('Auto-play prevented by browser:', error);
+          setIsMusicPlaying(false);
+        }
+      };
+
+      playMusic();
+    }
+
+    // Fireworks sound setup
+    if (fireworksAudioRef.current) {
+      fireworksAudioRef.current.volume = 0.5; // Set fireworks volume to 50%
+      fireworksAudioRef.current.loop = false; // Don't loop fireworks sound
+    }
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.removeEventListener('ended', () => setIsMusicPlaying(false));
+        audioRef.current.removeEventListener('play', () => setIsMusicPlaying(true));
+        audioRef.current.removeEventListener('pause', () => setIsMusicPlaying(false));
+      }
+    };
+  }, []);
+
   const DigitalDisplay = () => {
     const { days, hours, minutes, seconds } = timeData;
     
@@ -165,10 +237,24 @@ const Index = () => {
     <div className="min-h-screen bg-background p-4 sm:p-6 md:p-8 relative flex items-center justify-center">
       <Fireworks />
       <div className="max-w-6xl w-full relative z-10">
-        {/* Fullscreen Button */}
-        <div className={`absolute top-0 right-0 z-20 transition-opacity duration-300 ${
+        {/* Control Buttons */}
+        <div className={`absolute top-0 right-0 z-20 flex gap-3 transition-opacity duration-300 ${
           showFullscreenBtn ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}>
+          {/* Music Button */}
+          <button
+            onClick={toggleMusic}
+            className="p-3 bg-card hover:bg-muted rounded-lg border border-border shadow-lg transition-all duration-200 hover:scale-105"
+            title={isMusicPlaying ? "Turn Off Music" : "Turn On Music"}
+          >
+            {isMusicPlaying ? (
+              <Volume2 className="w-5 h-5 text-amber-400" />
+            ) : (
+              <VolumeX className="w-5 h-5 text-muted-foreground" />
+            )}
+          </button>
+
+          {/* Fullscreen Button */}
           <button
             onClick={toggleFullscreen}
             className="p-3 bg-card hover:bg-muted rounded-lg border border-border shadow-lg transition-all duration-200 hover:scale-105"
@@ -238,6 +324,23 @@ const Index = () => {
           </footer>
         )}
       </div>
+      
+      {/* Hidden Audio Elements */}
+      <audio
+        ref={audioRef}
+        preload="auto"
+      >
+        <source src="/song.mp3" type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
+      
+      <audio
+        ref={fireworksAudioRef}
+        preload="auto"
+      >
+        <source src="/firework.mp3" type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
     </div>
   );
 };
