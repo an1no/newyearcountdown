@@ -284,9 +284,9 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-4 sm:p-6 md:p-8 relative flex items-center justify-center">
+    <main className="min-h-screen bg-background p-4 sm:p-6 md:p-8 relative flex items-center justify-center">
       <Fireworks />
-      <div className="max-w-6xl w-full relative z-10">
+      <article className="max-w-6xl w-full relative z-10">
         {/* Control Buttons */}
         <div className={`absolute top-0 right-0 z-20 flex gap-3 transition-opacity duration-300 ${
           showFullscreenBtn ? 'opacity-100' : 'opacity-0 pointer-events-none'
@@ -373,6 +373,32 @@ const Index = () => {
             </p>
           </footer>
         )}
+      </article>
+      
+      {/* SEO Content - Hidden but accessible to search engines */}
+      <div className="sr-only">
+        <h1>New Year Countdown - Live Timer</h1>
+        <p>Experience the most interactive New Year countdown timer with stunning fireworks, background music, and real-time celebration effects. Our countdown timer provides an immersive experience for New Year's Eve, counting down every second until the next New Year arrives.</p>
+        
+        <h2>Features of Our New Year Countdown Timer</h2>
+        <ul>
+          <li>Live countdown to New Year with days, hours, minutes, and seconds</li>
+          <li>Stunning animated fireworks display</li>
+          <li>Background music and celebration sound effects</li>
+          <li>Fullscreen mode for big screen displays</li>
+          <li>Mobile-responsive design for all devices</li>
+          <li>Automatic celebration mode when midnight strikes</li>
+          <li>Dynamic browser tab updates with countdown status</li>
+        </ul>
+        
+        <h2>Perfect for New Year's Eve Celebrations</h2>
+        <p>Whether you're hosting a New Year's Eve party, watching the countdown at home, or celebrating with friends online, our countdown timer creates the perfect atmosphere. The combination of visual fireworks and audio effects makes every second count towards the biggest celebration of the year.</p>
+        
+        <h2>How to Use the Countdown Timer</h2>
+        <p>Simply visit our website and watch as the timer counts down to the next New Year. Click the music button to enable background music, use the fullscreen button for an immersive big-screen experience, and enjoy the automatic celebration when the countdown reaches zero. The timer works on all devices - desktop, tablet, and mobile.</p>
+        
+        <h2>New Year Countdown</h2>
+        <p>Join millions worldwide in counting down to the New Year. Our timer is synchronized and provides the most accurate countdown to help you celebrate the moment when the old year becomes the new year. Perfect timing for New Year's resolutions, celebrations, and marking the start of a new chapter.</p>
       </div>
       
       {/* Hidden Audio Elements */}
@@ -391,7 +417,7 @@ const Index = () => {
         <source src="/firework.mp3" type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
-    </div>
+    </main>
   );
 };
 
