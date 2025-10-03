@@ -10,22 +10,47 @@ const Index = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showFullscreenBtn, setShowFullscreenBtn] = useState(true);
   const [isMusicPlaying, setIsMusicPlaying] = useState(true); // Start with music playing
+  const [timeOffset, setTimeOffset] = useState(0); // Offset between server time and local time
   const audioRef = useRef<HTMLAudioElement>(null);
   const fireworksAudioRef = useRef<HTMLAudioElement>(null);
 
+  // Fetch accurate time from server on component mount
+  useEffect(() => {
+    const fetchServerTime = async () => {
+      try {
+        // Using WorldTimeAPI for accurate time
+        const response = await fetch('https://worldtimeapi.org/api/timezone/Etc/UTC');
+        const data = await response.json();
+        const serverTime = new Date(data.datetime).getTime();
+        const localTime = Date.now();
+        setTimeOffset(serverTime - localTime);
+      } catch (error) {
+        console.log('Could not fetch server time, using local time:', error);
+        setTimeOffset(0); // Fallback to local time if API fails
+      }
+    };
+    
+    fetchServerTime();
+  }, []);
+
+  // Get accurate current time (server time if available, otherwise local time)
+  const getAccurateTime = () => {
+    return new Date(Date.now() + timeOffset);
+  };
+
   // New Year countdown calculation
   useEffect(() => {
-    // Calculate next New Year (January 1st at midnight)
-    const now = new Date();
-    const currentYear = now.getFullYear();
+    // Calculate next New Year (January 1st at midnight UTC)
+    const now = getAccurateTime();
+    const currentYear = now.getUTCFullYear();
     const nextYear = currentYear + 1;
     
-    // Target time is January 1st of next year at midnight
-    const targetTime = new Date(nextYear, 0, 1, 0, 0, 0, 0); // Month is 0-indexed, so 0 = January
+    // Target time is January 1st of next year at midnight UTC
+    const targetTime = new Date(Date.UTC(nextYear, 0, 1, 0, 0, 0, 0)); // Month is 0-indexed, so 0 = January
     const celebrationEnd = new Date(targetTime.getTime() + 10 * 1000); // Celebrate for 10 seconds
     
     const calculateTimeRemaining = () => {
-      const now = new Date();
+      const now = getAccurateTime();
       
       // Check if we're in the celebration period (after countdown ends)
       if (now >= targetTime && now < celebrationEnd) {
@@ -55,7 +80,7 @@ const Index = () => {
     calculateTimeRemaining();
     const interval = setInterval(calculateTimeRemaining, 1000);
     return () => clearInterval(interval);
-  }, [isNewYear]); // This will re-run when isNewYear changes, creating a new countdown
+  }, [isNewYear, timeOffset]); // Re-run when isNewYear changes or when we get accurate time offset
 
   // Play fireworks sound when celebration starts
   useEffect(() => {
