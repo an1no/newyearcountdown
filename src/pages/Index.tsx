@@ -4,19 +4,29 @@ import { Fireworks } from "@/components/Fireworks";
 
 const Index = () => {
   const [time, setTime] = useState(0);
+  const [isNewYear, setIsNewYear] = useState(false);
 
   // New Year countdown calculation
   useEffect(() => {
-    const calculateNewYearTime = () => {
+    // Set target time to 5 minutes from when the component first loads
+    const targetTime = new Date(Date.now() + 0.2 * 60 * 1000);
+    
+    const calculateTimeRemaining = () => {
       const now = new Date();
-      const newYear = new Date(2026, 0, 1); // January 1, 2026
-      const diff = newYear.getTime() - now.getTime();
-      setTime(Math.max(0, Math.floor(diff / 1000)));
+      const diff = targetTime.getTime() - now.getTime();
+      const remainingTime = Math.max(0, Math.floor(diff / 1000));
+      setTime(remainingTime);
+      
+      // Trigger celebration when countdown reaches zero
+      if (remainingTime === 0 && !isNewYear) {
+        setIsNewYear(true);
+      }
     };
-    calculateNewYearTime();
-    const interval = setInterval(calculateNewYearTime, 1000);
+    
+    calculateTimeRemaining();
+    const interval = setInterval(calculateTimeRemaining, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isNewYear]);
 
   const formatTime = (seconds: number) => {
     const days = Math.floor(seconds / 86400);
@@ -71,13 +81,31 @@ const Index = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-2 text-gradient bg-gradient-to-r from-purple-400 via-blue-400 to-amber-400 bg-clip-text text-transparent">
-              New Year 2026 • Countdown          
+            New Year Countdown
           </h1>
+          <p className="text-muted-foreground text-sm sm:text-base flex items-center justify-center gap-2">
+            <Calendar className="w-4 h-4" />
+            {isNewYear ? "🎉 HAPPY NEW YEAR 2026! 🎉" : "New Year 2026 • Countdown"}
+          </p>
         </div>
 
         {/* Main Display */}
         <div className="bg-card rounded-2xl p-6 sm:p-8 md:p-12 mb-8 border-2 border-amber-400 shadow-2xl">
-          <DigitalDisplay />
+          {isNewYear ? (
+            <div className="text-center">
+              <div className="text-6xl sm:text-8xl md:text-9xl font-bold mb-6 animate-bounce">
+                🎊 🎉 🎊
+              </div>
+              <h2 className="text-4xl sm:text-6xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-amber-400 via-red-400 to-purple-400 bg-clip-text text-transparent animate-pulse">
+                HAPPY NEW YEAR!
+              </h2>
+              <p className="text-xl sm:text-2xl text-muted-foreground">
+                Welcome to 2026! ✨
+              </p>
+            </div>
+          ) : (
+            <DigitalDisplay />
+          )}
         </div>
 
         {/* Ad Placeholder */}
