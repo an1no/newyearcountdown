@@ -76,7 +76,7 @@ export const Fireworks = () => {
       const x = Math.random() * canvas.width;
       const y = Math.random() * (canvas.height * 0.5);
       createFirework(x, y);
-    }, 1000);
+    }, 300); // Reduced from 1000ms to 300ms for testing
 
     const handleResize = () => {
       canvas.width = window.innerWidth;
