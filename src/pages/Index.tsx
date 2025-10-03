@@ -22,10 +22,13 @@ const Index = () => {
         // Using WorldTimeAPI to get accurate time in user's timezone
         const response = await fetch('https://worldtimeapi.org/api/ip');
         const data = await response.json();
+        
+        // Set the detected timezone and time offset
+        const detectedTimezone = data.timezone;
         const serverTime = new Date(data.datetime).getTime();
         const localTime = Date.now();
         setTimeOffset(serverTime - localTime);
-        setUserTimezone(data.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone);
+        setUserTimezone(detectedTimezone || Intl.DateTimeFormat().resolvedOptions().timeZone);
       } catch (error) {
         console.log('Could not fetch server time, using local time:', error);
         setTimeOffset(0); // Fallback to local time if API fails
@@ -43,46 +46,104 @@ const Index = () => {
 
   // New Year countdown calculation
   useEffect(() => {
-    // Calculate next New Year (January 1st at midnight in user's local timezone)
-    const now = getAccurateTime();
-    const currentYear = now.getFullYear();
-    const nextYear = currentYear + 1;
+    // Only calculate if we have timezone info
+    if (!userTimezone) return;
     
-    // Target time is January 1st of next year at midnight in user's local timezone
-    const targetTime = new Date(nextYear, 0, 1, 0, 0, 0, 0); // Month is 0-indexed, so 0 = January
-    const celebrationEnd = new Date(targetTime.getTime() + 10 * 1000); // Celebrate for 10 seconds
+    let interval: NodeJS.Timeout;
     
-    const calculateTimeRemaining = () => {
-      const now = getAccurateTime();
-      
-      // Check if we're in the celebration period (after countdown ends)
-      if (now >= targetTime && now < celebrationEnd) {
-        setIsNewYear(true);
-        setTime(0);
-        return;
-      }
-      
-      // Reset celebration mode after celebration period and start new countdown to next year
-      if (isNewYear && now >= celebrationEnd) {
-        setIsNewYear(false);
-        // This will trigger the useEffect to run again and create a new target time for next year
-        return;
-      }
-      
-      // Calculate time remaining to New Year
-      const diff = targetTime.getTime() - now.getTime();
-      const remainingTime = Math.max(0, Math.floor(diff / 1000));
-      setTime(remainingTime);
-      
-      // Trigger celebration when countdown reaches zero
-      if (remainingTime === 0 && !isNewYear) {
-        setIsNewYear(true);
+    const setupCountdown = async () => {
+      try {
+        // Get current time in the detected timezone
+        const timezoneResponse = await fetch(`https://worldtimeapi.org/api/timezone/${userTimezone}`);
+        const timezoneData = await timezoneResponse.json();
+        
+        const currentTimeInTimezone = new Date(timezoneData.datetime);
+        const currentYear = currentTimeInTimezone.getFullYear();
+        const nextYear = currentYear + 1;
+        
+        // Create New Year target in the detected timezone
+        const newYearString = `${nextYear}-01-01T00:00:00${timezoneData.utc_offset}`;
+        const targetTime = new Date(newYearString);
+        const celebrationEnd = new Date(targetTime.getTime() + 10 * 1000);
+        
+        console.log('Timezone:', userTimezone);
+        console.log('Current time in timezone:', currentTimeInTimezone);
+        console.log('Target New Year time:', targetTime);
+        
+        const calculateTimeRemaining = () => {
+          const now = getAccurateTime();
+          
+          // Check if we're in the celebration period (after countdown ends)
+          if (now >= targetTime && now < celebrationEnd) {
+            setIsNewYear(true);
+            setTime(0);
+            return;
+          }
+          
+          // Reset celebration mode after celebration period and start new countdown to next year
+          if (isNewYear && now >= celebrationEnd) {
+            setIsNewYear(false);
+            return;
+          }
+          
+          // Calculate time remaining to New Year
+          const diff = targetTime.getTime() - now.getTime();
+          const remainingTime = Math.max(0, Math.floor(diff / 1000));
+          setTime(remainingTime);
+          
+          // Trigger celebration when countdown reaches zero
+          if (remainingTime === 0 && !isNewYear) {
+            setIsNewYear(true);
+          }
+        };
+        
+        calculateTimeRemaining();
+        interval = setInterval(calculateTimeRemaining, 1000);
+        
+      } catch (error) {
+        console.log('Could not fetch timezone-specific time, using fallback:', error);
+        // Fallback to original method
+        const now = getAccurateTime();
+        const currentYear = now.getFullYear();
+        const nextYear = currentYear + 1;
+        const targetTime = new Date(nextYear, 0, 1, 0, 0, 0, 0);
+        const celebrationEnd = new Date(targetTime.getTime() + 10 * 1000);
+        
+        const calculateTimeRemaining = () => {
+          const now = getAccurateTime();
+          
+          if (now >= targetTime && now < celebrationEnd) {
+            setIsNewYear(true);
+            setTime(0);
+            return;
+          }
+          
+          if (isNewYear && now >= celebrationEnd) {
+            setIsNewYear(false);
+            return;
+          }
+          
+          const diff = targetTime.getTime() - now.getTime();
+          const remainingTime = Math.max(0, Math.floor(diff / 1000));
+          setTime(remainingTime);
+          
+          if (remainingTime === 0 && !isNewYear) {
+            setIsNewYear(true);
+          }
+        };
+        
+        calculateTimeRemaining();
+        interval = setInterval(calculateTimeRemaining, 1000);
       }
     };
     
-    calculateTimeRemaining();
-    const interval = setInterval(calculateTimeRemaining, 1000);
-    return () => clearInterval(interval);
+    setupCountdown();
+    
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
   }, [isNewYear, timeOffset, userTimezone]); // Re-run when isNewYear changes, time offset is set, or timezone is detected
 
   // Play fireworks sound when celebration starts
@@ -363,9 +424,15 @@ const Index = () => {
             {isNewYear ? (
               `🎉 HAPPY NEW YEAR ${getAccurateTime().getFullYear()}! 🎉`
             ) : (
-              `New Year ${getAccurateTime().getFullYear() + 1} • ${userTimezone ? userTimezone.replace('_', ' ') : 'Your Local Time'}`
+              `New Year ${getAccurateTime().getFullYear() + 1} • ${userTimezone ? userTimezone.replace(/_/g, ' ') : 'Detecting timezone...'}`
             )}
           </p>
+          {/* Debug info - remove in production */}
+          {userTimezone && (
+            <p className="text-xs text-muted-foreground/70 mt-1">
+              Debug: Timezone detected as {userTimezone}
+            </p>
+          )}
         </div>
 
         {/* Top Banner Ad - Hidden in fullscreen */}
