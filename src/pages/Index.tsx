@@ -427,12 +427,6 @@ const Index = () => {
               `New Year ${getAccurateTime().getFullYear() + 1} • ${userTimezone ? userTimezone.replace(/_/g, ' ') : 'Detecting timezone...'}`
             )}
           </p>
-          {/* Debug info - remove in production */}
-          {userTimezone && (
-            <p className="text-xs text-muted-foreground/70 mt-1">
-              Debug: Timezone detected as {userTimezone}
-            </p>
-          )}
         </div>
 
         {/* Top Banner Ad - Hidden in fullscreen */}
