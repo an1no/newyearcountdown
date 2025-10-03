@@ -1,73 +1,165 @@
-# Welcome to your Lovable project
+# 🎉 New Year Countdown Timer
 
-## Project info
+A stunning, interactive countdown timer for New Year celebrations with fireworks, music, and celebration effects.
 
-**URL**: https://lovable.dev/projects/3532588f-aff5-4262-877a-6662eb1f8f3b
+## 🌟 Live Demo
 
-## How can I edit this code?
+**Website**: [https://newyearcountdown.net](https://newyearcountdown.net)
 
-There are several ways of editing your application.
+## ✨ Features
 
-**Use Lovable**
+- 🕒 **Real-time countdown** to New Year in your local timezone
+- 🎆 **Interactive fireworks** animation when countdown reaches zero
+- 🎵 **Background music** and celebration sound effects
+- 🖥️ **Fullscreen mode** for big screen displays
+- 📱 **Mobile responsive** design for all devices
+- 🌍 **Timezone aware** - works globally with VPN support
+- ⚡ **Accurate timing** using WorldTimeAPI for precision
+- 🎨 **Beautiful UI** with gradient backgrounds and animations
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/3532588f-aff5-4262-877a-6662eb1f8f3b) and start prompting.
+## 🚀 Technologies Used
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Frontend**: React 18 + TypeScript
+- **Styling**: Tailwind CSS + shadcn/ui components
+- **Build Tool**: Vite
+- **Deployment**: GitHub Pages with custom domain
+- **Analytics**: Google Analytics (GA4)
+- **Monetization**: Google AdSense
+- **API**: WorldTimeAPI for accurate timezone handling
 
-**Use your preferred IDE**
+## 🛠️ Local Development
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Prerequisites
+- Node.js 18+ and npm
+- Git
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Setup
 
-Follow these steps:
+```bash
+# Clone the repository
+git clone https://github.com/an1no/newyearcountdown.git
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Navigate to project directory
+cd newyearcountdown
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Install dependencies
+npm install
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Visit `http://localhost:5173` to see the application.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Build for Production
 
-**Use GitHub Codespaces**
+```bash
+# Build the project
+npm run build
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+# Preview the build
+npm run preview
+```
 
-## What technologies are used for this project?
+## 📁 Project Structure
 
-This project is built with:
+```
+├── src/
+│   ├── components/          # React components
+│   │   ├── Fireworks.tsx   # Fireworks animation component
+│   │   ├── GoogleAds.tsx   # AdSense integration
+│   │   └── ui/             # shadcn/ui components
+│   ├── pages/
+│   │   ├── Index.tsx       # Main countdown page
+│   │   ├── Privacy.tsx     # Privacy policy page
+│   │   └── NotFound.tsx    # 404 page
+│   ├── config/
+│   │   └── adsense.ts      # AdSense configuration
+│   └── lib/
+│       └── utils.ts        # Utility functions
+├── public/
+│   ├── song.mp3           # Background music
+│   ├── firework.mp3       # Celebration sound
+│   ├── manifest.json      # PWA manifest
+│   ├── sitemap.xml        # SEO sitemap
+│   ├── robots.txt         # SEO robots file
+│   ├── 404.html          # SPA routing support
+│   └── CNAME             # Custom domain configuration
+└── docs/                  # Documentation
+    ├── MONETIZATION_GUIDE.md
+    ├── ADSENSE_SETUP.md
+    └── DEPLOYMENT_CHECKLIST.md
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🌍 Deployment
 
-## How can I deploy this project?
+The project is deployed on GitHub Pages with a custom domain:
 
-Simply open [Lovable](https://lovable.dev/projects/3532588f-aff5-4262-877a-6662eb1f8f3b) and click on Share -> Publish.
+1. **Domain**: `newyearcountdown.net`
+2. **CI/CD**: Automated deployment via GitHub Actions
+3. **SSL**: Automatically managed by GitHub Pages
 
-## Can I connect a custom domain to my Lovable project?
+### Deployment Process
 
-Yes, you can!
+```bash
+# Build and deploy (automated via GitHub Actions)
+git push origin main
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 🔧 Configuration
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+### Environment Variables
+- Google Analytics: `G-GPT7MWGXT2`
+- Google AdSense: `ca-pub-5179227765734373`
+
+### API Dependencies
+- **WorldTimeAPI**: For accurate timezone detection and time synchronization
+
+## 📊 Analytics & Monetization
+
+- **Google Analytics 4**: Tracks user behavior and site performance
+- **Google AdSense**: Banner advertisements for revenue generation
+- **Performance Monitoring**: Core Web Vitals tracking
+
+## 🎯 SEO Features
+
+- **Structured Data**: Schema.org markup for rich snippets
+- **Meta Tags**: Comprehensive Open Graph and Twitter Card support
+- **Sitemap**: Auto-generated XML sitemap
+- **Robots.txt**: Search engine crawling instructions
+
+## 📱 PWA Support
+
+- **Manifest**: Web app manifest for installation
+- **Icons**: Multiple icon sizes for different devices
+- **Offline**: Basic offline functionality
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 👨‍💻 Author
+
+**Anino Zaridze**
+- Website: [newyearcountdown.net](https://newyearcountdown.net)
+- LinkedIn: [anino-zaridze](https://linkedin.com/in/anino-zaridze)
+- GitHub: [@an1no](https://github.com/an1no)
+
+## 🙏 Acknowledgments
+
+- Sound effects and music assets
+- WorldTimeAPI for accurate time data
+- shadcn/ui for beautiful UI components
+- The React and Vite communities
+
+---
+
+**Happy New Year!** 🎊
