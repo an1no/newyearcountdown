@@ -60,6 +60,56 @@ const Index = () => {
     }
   }, [isNewYear]);
 
+  // Update document title and favicon based on state
+  useEffect(() => {
+    if (isNewYear) {
+      document.title = "Happy New Year!";
+      // Change favicon to party emoji
+      changeFavicon("🎉");
+    } else {
+      document.title = "New Year Countdown";
+      // Change favicon to clock emoji
+      changeFavicon("⏰");
+    }
+    
+    // Cleanup: Reset title when component unmounts
+    return () => {
+      document.title = "New Year Countdown";
+      changeFavicon("⏰");
+    };
+  }, [isNewYear]);
+
+  // Function to change favicon
+  const changeFavicon = (emoji: string) => {
+    // Create canvas element
+    const canvas = document.createElement('canvas');
+    canvas.width = 64;
+    canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+    
+    if (ctx) {
+      // Set font and draw emoji
+      ctx.font = '48px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(emoji, 32, 32);
+      
+      // Convert canvas to data URL
+      const dataURL = canvas.toDataURL();
+      
+      // Find existing favicon or create new one
+      let favicon = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
+      if (!favicon) {
+        favicon = document.createElement('link');
+        favicon.rel = 'icon';
+        document.head.appendChild(favicon);
+      }
+      
+      // Update favicon
+      favicon.href = dataURL;
+    }
+  };
+
   const formatTime = (seconds: number) => {
     const days = Math.floor(seconds / 86400);
     const hrs = Math.floor((seconds % 86400) / 3600);
